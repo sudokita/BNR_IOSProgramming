@@ -17,7 +17,7 @@
 
 @implementation BNRItemStore
 
-- (BNRItem *) createItem
+- (BNRItem *) creatItem
 {
     BNRItem *item = [BNRItem randomItem];
     
