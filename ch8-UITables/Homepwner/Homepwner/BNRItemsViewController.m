@@ -54,6 +54,16 @@
 }
 
 
+//silver challenge
+- (NSString *)tableView:(UITableView *)tv titleForFooterInSection:(NSInteger)section
+{
+    if (section == 1)
+        return @"No More Items";
+    else
+        return @"";
+}
+
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"UITableViewCell"];
