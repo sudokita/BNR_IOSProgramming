@@ -31,27 +31,19 @@
 //change number of rows in each section depedning on the filter
 - (NSInteger)tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section
 {
-    NSInteger numberOfRows = 0;
-    if (section==0) //section for <= 50
-    {
-        for (BNRItem *item in [[BNRItemStore sharedStore] allItems])
-        {
-            if(item.valueInDollars<=50)
-                numberOfRows++;
-        }
+    NSPredicate *predicate;
+    if (section == 0) {
+        predicate = [NSPredicate predicateWithFormat:@"valueInDollars <= 50"];
     }
-    else //section for >50
+    else
     {
-        
-        for (BNRItem *item in [[BNRItemStore sharedStore] allItems])
-        {
-            if(item.valueInDollars>50)
-                numberOfRows++;
-        }
+        predicate = [NSPredicate predicateWithFormat:@"valueInDollars > 50"];
     }
-    return numberOfRows;
+    
+    NSArray *items = [[[BNRItemStore sharedStore] allItems] filteredArrayUsingPredicate:predicate];
+    NSInteger numRows = [items count];
+    return numRows;
 }
-//bronze challenge end
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
@@ -62,19 +54,25 @@
 }
 
 
-
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"UITableViewCell"];
+    if (!cell) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                      reuseIdentifier:@"UITableViewCell"];
+    }
     
-    //get a new OR recycled cell
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"UITableViewCell" forIndexPath:indexPath];
+    //use predicates to filter items accordingly
+    NSPredicate *predicate;
+    if ([indexPath section] == 0) {
+        predicate = [NSPredicate predicateWithFormat:@"valueInDollars <= 50"];
+    } else {
+        predicate = [NSPredicate predicateWithFormat:@"valueInDollars > 50"];
+    }
     
-    //set the text to the description of the item on index/row n
-    NSArray *items = [[BNRItemStore sharedStore]allItems];
-    BNRItem *item = items[indexPath.row];
-    cell.textLabel.text = [item description];
-    
+    NSArray *items= [[[BNRItemStore sharedStore] allItems] filteredArrayUsingPredicate:predicate];
+    BNRItem *item = [items objectAtIndex:indexPath.row];
+    cell.textLabel.text = item.description;
     return cell;
 }
 
