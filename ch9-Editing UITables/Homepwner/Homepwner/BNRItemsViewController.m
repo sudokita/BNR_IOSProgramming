@@ -22,12 +22,20 @@
     [[BNRItemStore sharedStore]moveItemAtIndex:sourceIndexPath.row toIndex:destinationIndexPath.row];
 }
 
+
+//BRONZE Challenge
+- (NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return @"Remove";
+}
+
 - (void)tableView:(UITableView *) tableView
     commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     //if the table view is asking to commit a delete command
     if(editingStyle == UITableViewCellEditingStyleDelete)
     {
+
         // remove item from store
         NSArray *items = [[BNRItemStore sharedStore]allItems];
         BNRItem *item = items[indexPath.row];
@@ -35,6 +43,7 @@
         
         //remove row from table
         [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        
     }
 }
 
