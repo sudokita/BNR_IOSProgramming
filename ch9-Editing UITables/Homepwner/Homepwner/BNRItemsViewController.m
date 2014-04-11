@@ -16,17 +16,52 @@
 
 @implementation BNRItemsViewController
 
-- (void)tableView:(UITableView *) tableView
-    moveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath
-{
-    [[BNRItemStore sharedStore]moveItemAtIndex:sourceIndexPath.row toIndex:destinationIndexPath.row];
-}
-
-
-//BRONZE Challenge
+//BRONZE Challenge - rename delete button
 - (NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return @"Remove";
+}
+
+//GOLD Challenge - freeze last row - still need to make it undeletable and fix the moving issue
+- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSInteger lastRow = [[[BNRItemStore sharedStore]allItems] count];
+    if (indexPath.row == lastRow) // Don't move the last row
+    {
+        //unmoveable
+        return NO;
+    }
+    
+    return YES;
+}
+
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSInteger lastRow = [[[BNRItemStore sharedStore]allItems] count];
+    if (indexPath.row == lastRow) // Don't move the last row
+    {
+        //unmoveable
+        return NO;
+    }
+    
+    return YES;
+}
+
+
+- (void)tableView:(UITableView *) tableView
+    moveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath
+{
+    //if to index is the last position, auto -1
+    NSInteger lastRow = [[[BNRItemStore sharedStore]allItems]count]+1;
+    
+    if (destinationIndexPath.row == lastRow)
+    {
+        destinationIndexPath = [NSIndexPath indexPathForRow:lastRow inSection:0];
+         [[BNRItemStore sharedStore]moveItemAtIndex:sourceIndexPath.row toIndex:destinationIndexPath.row];
+    }
+    else
+    {
+        [[BNRItemStore sharedStore]moveItemAtIndex:sourceIndexPath.row toIndex:destinationIndexPath.row];
+    //don't let things go beneath the last row - FIX ME EEEEEE
+    }
 }
 
 - (void)tableView:(UITableView *) tableView
@@ -46,6 +81,7 @@
         
     }
 }
+
 
 - (IBAction)addNewItem:(id)sender
 {
@@ -105,11 +141,13 @@
     //load headerView
     UIView *header = self.headerView;
     [self.tableView setTableHeaderView:header];
+    
+    
 }
 
 - (NSInteger)tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [[[BNRItemStore sharedStore] allItems] count];
+    return [[[BNRItemStore sharedStore] allItems] count]+1;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -120,9 +158,17 @@
     
     //set the text to the description of the item on index/row n
     NSArray *items = [[BNRItemStore sharedStore]allItems];
-    BNRItem *item = items[indexPath.row];
     
-    cell.textLabel.text = [item description];
+    
+    
+    //SILVER Challenge
+    if([indexPath row] < [[[BNRItemStore sharedStore] allItems] count]) {
+        BNRItem *item = items[indexPath.row];
+        cell.textLabel.text = [item description];
+    } else
+    {
+        [[cell textLabel] setText:@"No more items!"];
+    }
     
     return cell;
 }
