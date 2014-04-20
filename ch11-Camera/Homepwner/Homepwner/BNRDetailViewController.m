@@ -37,8 +37,9 @@
 
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
+    
     //get image picked
-    UIImage *image = info[UIImagePickerControllerOriginalImage];
+    UIImage *image = info[UIImagePickerControllerEditedImage];
     
     [[BNRImageStore sharedStore]setImage:image forKey:self.item.imageKey];
     
@@ -50,6 +51,8 @@
 - (IBAction)takePicture:(id)sender {
     UIImagePickerController *imagePicker = [[UIImagePickerController alloc]init];
     
+    
+    
     if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera])
     {
         imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
@@ -59,7 +62,11 @@
         imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
     }
     
+    //BRONZE Challenge
+    [imagePicker setAllowsEditing:YES];
+    
     imagePicker.delegate = self;
+    
     
     //place image picker on screen (the equivalent of putting the view on the stack)
     [self presentViewController:imagePicker animated:YES completion:nil];
